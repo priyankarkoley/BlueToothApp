@@ -11,7 +11,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -31,30 +30,21 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import com.example.simpbluetooth.ui.theme.SimpBluetoothTheme
 
+@Suppress("DEPRECATION")
 class MainActivity : ComponentActivity() {
-
-    private lateinit var btManager : BluetoothManager
-    private lateinit var btAdapter : BluetoothAdapter
-    private lateinit var reqPermission : ActivityResultLauncher<String>
-    private lateinit var takeResultLauncher: ActivityResultLauncher<Intent>
+//
+//    private late init var btManager : BluetoothManager
+//    private late init var btAdapter : BluetoothAdapter
+//    private late init var reqPermission : ActivityResultLauncher<String>
+//    private late init var takeResultLauncher: ActivityResultLauncher<Intent>
 
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        btManager = getSystemService(BLUETOOTH_SERVICE) as BluetoothManager
-        btAdapter = btManager.adapter
-        reqPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-//            if (it) {
-//                Toast.makeText(applicationContext, "BL unavailable", Toast.LENGTH_SHORT).show()
-//            } else {
-//                val intent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-//                takeResultLauncher.launch(intent)
-//            }
-            val intent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            takeResultLauncher.launch(intent)
-        }
-        takeResultLauncher =
+        val btManager = getSystemService(BLUETOOTH_SERVICE) as BluetoothManager
+        val btAdapter = btManager.adapter
+        val takeResultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()
             ) {
                 if (it.resultCode == RESULT_OK) Toast.makeText(
@@ -65,6 +55,17 @@ class MainActivity : ComponentActivity() {
                 else Toast.makeText(applicationContext, "Permission denied", Toast.LENGTH_SHORT)
                     .show()
             }
+        val reqPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+//            if (it) {
+//                Toast.makeText(applicationContext, "BL unavailable", Toast.LENGTH_SHORT).show()
+//            } else {
+//                val intent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+//                takeResultLauncher.launch(intent)
+//            }
+            val intent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+            takeResultLauncher.launch(intent)
+        }
+
 
         setContent {
             SimpBluetoothTheme {
@@ -97,7 +98,7 @@ class MainActivity : ComponentActivity() {
                                         Manifest.permission.BLUETOOTH_CONNECT
                                     ) != PackageManager.PERMISSION_GRANTED
                                 ) {
-                                    Toast.makeText(applicationContext, "OFFF", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(applicationContext, "Turned OFF", Toast.LENGTH_SHORT).show()
                                     btAdapter.disable()
                                 }
                             }) {
